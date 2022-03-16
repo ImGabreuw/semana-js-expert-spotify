@@ -46,7 +46,7 @@ async function routes(request, response) {
   if (method === 'GET') {
     const { stream, type } = await controller.getFileStream(url);
 
-    return response.pipe(response);
+    return stream.pipe(response);
   }
 
   response.writeHead(404);
