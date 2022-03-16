@@ -1,7 +1,7 @@
 import fs from 'fs';
 import fsPromises from 'fs/promises';
 import config from './config.js';
-import { join } from 'path';
+import { join, extname } from 'path';
 
 const {
   dir: {
@@ -18,7 +18,7 @@ export class Service {
     const absolutePath = join(publicDirectory, file);
     await fsPromises.access(absolutePath);
 
-    const fileType = extname(fullFilePath);
+    const fileType = extname(absolutePath);
 
     return {
       type: fileType,
