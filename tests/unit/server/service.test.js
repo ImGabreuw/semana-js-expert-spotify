@@ -1,103 +1,194 @@
 import {
+  jest,
   expect,
   describe,
   test,
-  jest,
   beforeEach
 } from '@jest/globals'
-
-import fs from 'fs'
-import fsPromises from 'fs/promises'
-
-import {
-  Service
-} from '../../../server/service.js'
-import TestUtil from '../_util/testUtil.js'
 import config from '../../../server/config.js'
+import {
+  Controller
+} from '../../../server/controller.js'
+import {
+  handler
+} from '../../../server/routes.js'
+import TestUtil from '../_util/testUtil.js'
+
 const {
-  dir: {
-    publicDirectory
-  },
+  pages,
+  location,
+  constants: {
+    CONTENT_TYPE
+  }
 } = config
 
-describe('#Service - test suite for core processing', () => {
+describe('#Routes - test site for api response', () => {
   beforeEach(() => {
     jest.restoreAllMocks()
     jest.clearAllMocks()
   })
 
-  test('#createFileStream', () => {
-    const currentReadable = TestUtil.generateReadableStream(['abc'])
+  test('GET / - should redirect to home page', async () => {
+    const params = TestUtil.defaultHandleParams()
+    params.request.method = 'GET'
+    params.request.url = '/'
+
+    await handler(...params.values())
+
+    expect(params.response.writeHead).toBeCalledWith(
+      302, {
+        'Location': location.home
+      }
+    )
+    expect(params.response.end).toHaveBeenCalled()
+  })
+  test(`GET /home - should response with ${pages.homeHTML} file stream`, async () => {
+    const params = TestUtil.defaultHandleParams()
+    params.request.method = 'GET'
+    params.request.url = '/home'
+    const mockFileStream = TestUtil.generateReadableStream(['data'])
 
     jest.spyOn(
-      fs,
-      fs.createReadStream.name
-    ).mockReturnValue(currentReadable)
+      Controller.prototype,
+      Controller.prototype.getFileStream.name,
+    ).mockResolvedValue({
+      stream: mockFileStream,
+    })
 
-    const service = new Service()
-    const myFile = 'file.mp3'
-    const result = service.createFileStream(myFile)
-
-    expect(result).toStrictEqual(currentReadable)
-    expect(fs.createReadStream).toHaveBeenCalledWith(myFile)
-  })
-
-  test('#getFileInfo', async () => {
     jest.spyOn(
-      fsPromises,
-      fsPromises.access.name
-    ).mockResolvedValue()
+      mockFileStream,
+      "pipe"
+    ).mockReturnValue()
 
-    const currentSong = 'mySong.mp3'
-    const service = new Service()
-    const result = await service.getFileInfo(currentSong)
-    const expectedResult = {
-      type: '.mp3',
-      name: `${publicDirectory}/${currentSong}`
-    }
+    await handler(...params.values())
 
-    expect(result).toStrictEqual(expectedResult)
+    expect(Controller.prototype.getFileStream).toBeCalledWith(pages.homeHTML)
+    expect(mockFileStream.pipe).toHaveBeenCalledWith(params.response)
+  })
+  test(`GET /controller - should response with ${pages.controllerHTML} file stream`, async () => {
+    const params = TestUtil.defaultHandleParams()
+    params.request.method = 'GET'
+    params.request.url = '/controller'
+    const mockFileStream = TestUtil.generateReadableStream(['data'])
+
+    jest.spyOn(
+      Controller.prototype,
+      Controller.prototype.getFileStream.name,
+    ).mockResolvedValue({
+      stream: mockFileStream,
+    })
+
+    jest.spyOn(
+      mockFileStream,
+      "pipe"
+    ).mockReturnValue()
+
+    await handler(...params.values())
+
+    expect(Controller.prototype.getFileStream).toBeCalledWith(pages.controllerHTML)
+    expect(mockFileStream.pipe).toHaveBeenCalledWith(params.response)
   })
 
-  test('#getFileStream', async () => {
-    const currentReadable = TestUtil.generateReadableStream(['abc'])
-    const currentSong = `mySong.mp3`
-    const currentSongFullPath = `${publicDirectory}/${currentSong}`
+  test(`GET /index.html - should response with file stream`, async () => {
+    const params = TestUtil.defaultHandleParams()
+    const filename = '/index.html'
+    params.request.method = 'GET'
+    params.request.url = filename
+    const expectedType = '.html'
+    const mockFileStream = TestUtil.generateReadableStream(['data'])
 
-    const fileInfo = {
-      type: '.mp3',
-      name: currentSongFullPath
-    }
+    jest.spyOn(
+      Controller.prototype,
+      Controller.prototype.getFileStream.name,
+    ).mockResolvedValue({
+      stream: mockFileStream,
+      type: expectedType
+    })
 
-    const service = new Service()
-    jest
-      .spyOn(
-        service,
-        service.getFileInfo.name
-      )
-      .mockResolvedValue(fileInfo)
+    jest.spyOn(
+      mockFileStream,
+      "pipe"
+    ).mockReturnValue()
 
-    jest
-      .spyOn(
-        service,
-        service.createFileStream.name
-      )
-      .mockReturnValue(currentReadable)
+    await handler(...params.values())
 
-    const result = await service.getFileStream(currentSong)
-    const expectedResult = {
-      type: fileInfo.type,
-      stream: currentReadable
-    }
-    expect(result).toStrictEqual(expectedResult)
-    expect(service.createFileStream).toHaveBeenCalledWith(
-      fileInfo.name
+    expect(Controller.prototype.getFileStream).toBeCalledWith(filename)
+    expect(mockFileStream.pipe).toHaveBeenCalledWith(params.response)
+    expect(params.response.writeHead).toHaveBeenCalledWith(
+      200, {
+        'Content-Type': CONTENT_TYPE[expectedType]
+      }
     )
+  })
 
-    expect(service.getFileInfo).toHaveBeenCalledWith(
-      currentSong
-    )
+  test(`GET /file.ext - should response with file stream`, async () => {
+    const params = TestUtil.defaultHandleParams()
+    const filename = '/file.ext'
+    params.request.method = 'GET'
+    params.request.url = filename
+    const expectedType = '.ext'
+    const mockFileStream = TestUtil.generateReadableStream(['data'])
+
+    jest.spyOn(
+      Controller.prototype,
+      Controller.prototype.getFileStream.name,
+    ).mockResolvedValue({
+      stream: mockFileStream,
+      type: expectedType
+    })
+
+    jest.spyOn(
+      mockFileStream,
+      "pipe"
+    ).mockReturnValue()
+
+    await handler(...params.values())
+
+    expect(Controller.prototype.getFileStream).toBeCalledWith(filename)
+    expect(mockFileStream.pipe).toHaveBeenCalledWith(params.response)
+    expect(params.response.writeHead).not.toHaveBeenCalled()
+  })
+
+  test(`POST /unknown - given an inexistent route it should response with 404`, async () => {
+    const params = TestUtil.defaultHandleParams()
+    params.request.method = 'POST'
+    params.request.url = '/unknown'
+
+    await handler(...params.values())
+
+    expect(params.response.writeHead).toHaveBeenCalledWith(404)
+    expect(params.response.end).toHaveBeenCalled()
 
   })
 
+  describe('exceptions', () => {
+    test('given inexistent file it should respond with 404', async () => {
+      const params = TestUtil.defaultHandleParams()
+      params.request.method = 'GET'
+      params.request.url = '/index.png'
+      jest.spyOn(
+        Controller.prototype,
+        Controller.prototype.getFileStream.name,
+      ).mockRejectedValue(new Error('Error: ENOENT: no such file or directy'))
+
+      await handler(...params.values())
+
+      expect(params.response.writeHead).toHaveBeenCalledWith(404)
+      expect(params.response.end).toHaveBeenCalled()
+    })
+    test('given an error it should respond with 500', async () => {
+      const params = TestUtil.defaultHandleParams()
+      params.request.method = 'GET'
+      params.request.url = '/index.png'
+      jest.spyOn(
+        Controller.prototype,
+        Controller.prototype.getFileStream.name,
+      ).mockRejectedValue(new Error('Error:'))
+
+      await handler(...params.values())
+
+      expect(params.response.writeHead).toHaveBeenCalledWith(500)
+      expect(params.response.end).toHaveBeenCalled()
+    })
+  })
 })
