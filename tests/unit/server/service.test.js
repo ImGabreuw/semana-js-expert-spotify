@@ -1,194 +1,295 @@
 import {
-  jest,
   expect,
   describe,
   test,
+  jest,
   beforeEach
 } from '@jest/globals'
-import config from '../../../server/config.js'
-import {
-  Controller
-} from '../../../server/controller.js'
-import {
-  handler
-} from '../../../server/routes.js'
-import TestUtil from '../_util/testUtil.js'
 
+import fs from 'fs'
+import fsPromises from 'fs/promises'
+import childProcess from 'child_process'
+
+import stream from 'stream'
+import streamsAsync from 'stream/promises'
 const {
-  pages,
-  location,
+  PassThrough,
+  Writable,
+} = stream
+
+import Throttle from 'throttle'
+import {
+  Service
+} from '../../../server/service.js'
+import TestUtil from '../_util/testUtil.js'
+import config from '../../../server/config.js'
+const {
+  dir: {
+    fxDirectory,
+    publicDirectory
+  },
   constants: {
-    CONTENT_TYPE
+    fallbackBitRate,
+    bitRateDivisor
   }
 } = config
 
-describe('#Routes - test site for api response', () => {
+describe('#Service - test suite for core processing', () => {
+  const getSpawnResponse = ({
+    stdout = '',
+    stderr = '',
+    stdin = () => {}
+  }) => ({
+    stdout: TestUtil.generateReadableStream([stdout]),
+    stderr: TestUtil.generateReadableStream([stderr]),
+    stdin: TestUtil.generateWritableStream(stdin),
+  })
+
   beforeEach(() => {
     jest.restoreAllMocks()
     jest.clearAllMocks()
   })
 
-  test('GET / - should redirect to home page', async () => {
-    const params = TestUtil.defaultHandleParams()
-    params.request.method = 'GET'
-    params.request.url = '/'
+  test('#createFileStream', () => {
+    const currentReadable = TestUtil.generateReadableStream(['abc'])
 
-    await handler(...params.values())
+    jest.spyOn(
+      fs,
+      fs.createReadStream.name
+    ).mockReturnValue(currentReadable)
 
-    expect(params.response.writeHead).toBeCalledWith(
-      302, {
-        'Location': location.home
-      }
+    const service = new Service()
+    const myFile = 'file.mp3'
+    const result = service.createFileStream(myFile)
+
+    expect(result).toStrictEqual(currentReadable)
+    expect(fs.createReadStream).toHaveBeenCalledWith(myFile)
+  })
+
+  test('#getFileInfo', async () => {
+    jest.spyOn(
+      fsPromises,
+      fsPromises.access.name
+    ).mockResolvedValue()
+
+    const currentSong = 'mySong.mp3'
+    const service = new Service()
+    const result = await service.getFileInfo(currentSong)
+    const expectedResult = {
+      type: '.mp3',
+      name: `${publicDirectory}/${currentSong}`
+    }
+
+    expect(result).toStrictEqual(expectedResult)
+  })
+
+  test('#getFileStream', async () => {
+    const currentReadable = TestUtil.generateReadableStream(['abc'])
+    const currentSong = `mySong.mp3`
+    const currentSongFullPath = `${publicDirectory}/${currentSong}`
+
+    const fileInfo = {
+      type: '.mp3',
+      name: currentSongFullPath
+    }
+
+    const service = new Service()
+    jest
+      .spyOn(
+        service,
+        service.getFileInfo.name
+      )
+      .mockResolvedValue(fileInfo)
+
+    jest
+      .spyOn(
+        service,
+        service.createFileStream.name
+      )
+      .mockReturnValue(currentReadable)
+
+    const result = await service.getFileStream(currentSong)
+    const expectedResult = {
+      type: fileInfo.type,
+      stream: currentReadable
+    }
+    expect(result).toStrictEqual(expectedResult)
+    expect(service.createFileStream).toHaveBeenCalledWith(
+      fileInfo.name
     )
-    expect(params.response.end).toHaveBeenCalled()
-  })
-  test(`GET /home - should response with ${pages.homeHTML} file stream`, async () => {
-    const params = TestUtil.defaultHandleParams()
-    params.request.method = 'GET'
-    params.request.url = '/home'
-    const mockFileStream = TestUtil.generateReadableStream(['data'])
 
-    jest.spyOn(
-      Controller.prototype,
-      Controller.prototype.getFileStream.name,
-    ).mockResolvedValue({
-      stream: mockFileStream,
-    })
-
-    jest.spyOn(
-      mockFileStream,
-      "pipe"
-    ).mockReturnValue()
-
-    await handler(...params.values())
-
-    expect(Controller.prototype.getFileStream).toBeCalledWith(pages.homeHTML)
-    expect(mockFileStream.pipe).toHaveBeenCalledWith(params.response)
-  })
-  test(`GET /controller - should response with ${pages.controllerHTML} file stream`, async () => {
-    const params = TestUtil.defaultHandleParams()
-    params.request.method = 'GET'
-    params.request.url = '/controller'
-    const mockFileStream = TestUtil.generateReadableStream(['data'])
-
-    jest.spyOn(
-      Controller.prototype,
-      Controller.prototype.getFileStream.name,
-    ).mockResolvedValue({
-      stream: mockFileStream,
-    })
-
-    jest.spyOn(
-      mockFileStream,
-      "pipe"
-    ).mockReturnValue()
-
-    await handler(...params.values())
-
-    expect(Controller.prototype.getFileStream).toBeCalledWith(pages.controllerHTML)
-    expect(mockFileStream.pipe).toHaveBeenCalledWith(params.response)
-  })
-
-  test(`GET /index.html - should response with file stream`, async () => {
-    const params = TestUtil.defaultHandleParams()
-    const filename = '/index.html'
-    params.request.method = 'GET'
-    params.request.url = filename
-    const expectedType = '.html'
-    const mockFileStream = TestUtil.generateReadableStream(['data'])
-
-    jest.spyOn(
-      Controller.prototype,
-      Controller.prototype.getFileStream.name,
-    ).mockResolvedValue({
-      stream: mockFileStream,
-      type: expectedType
-    })
-
-    jest.spyOn(
-      mockFileStream,
-      "pipe"
-    ).mockReturnValue()
-
-    await handler(...params.values())
-
-    expect(Controller.prototype.getFileStream).toBeCalledWith(filename)
-    expect(mockFileStream.pipe).toHaveBeenCalledWith(params.response)
-    expect(params.response.writeHead).toHaveBeenCalledWith(
-      200, {
-        'Content-Type': CONTENT_TYPE[expectedType]
-      }
+    expect(service.getFileInfo).toHaveBeenCalledWith(
+      currentSong
     )
+
   })
 
-  test(`GET /file.ext - should response with file stream`, async () => {
-    const params = TestUtil.defaultHandleParams()
-    const filename = '/file.ext'
-    params.request.method = 'GET'
-    params.request.url = filename
-    const expectedType = '.ext'
-    const mockFileStream = TestUtil.generateReadableStream(['data'])
-
+  test('#removeClientStream', () => {
+    const service = new Service()
     jest.spyOn(
-      Controller.prototype,
-      Controller.prototype.getFileStream.name,
-    ).mockResolvedValue({
-      stream: mockFileStream,
-      type: expectedType
-    })
+      service.clientStreams,
+      service.clientStreams.delete.name
+    ).mockReturnValue()
+    const mockId = '1'
+    service.removeClientStream(mockId)
 
+    expect(service.clientStreams.delete).toHaveBeenCalledWith(mockId)
+  })
+
+  test('#createClientStream', () => {
+    const service = new Service()
     jest.spyOn(
-      mockFileStream,
-      "pipe"
+      service.clientStreams,
+      service.clientStreams.set.name
     ).mockReturnValue()
 
-    await handler(...params.values())
+    const {
+      id,
+      clientStream
+    } = service.createClientStream()
 
-    expect(Controller.prototype.getFileStream).toBeCalledWith(filename)
-    expect(mockFileStream.pipe).toHaveBeenCalledWith(params.response)
-    expect(params.response.writeHead).not.toHaveBeenCalled()
+    expect(id.length).toBeGreaterThan(0)
+    expect(clientStream).toBeInstanceOf(PassThrough)
+    expect(service.clientStreams.set).toHaveBeenCalledWith(id, clientStream)
   })
 
-  test(`POST /unknown - given an inexistent route it should response with 404`, async () => {
-    const params = TestUtil.defaultHandleParams()
-    params.request.method = 'POST'
-    params.request.url = '/unknown'
+  test('#stopStreamming - existing throttleTransform', () => {
+    const service = new Service()
+    service.throttleTransform = new Throttle(1)
 
-    await handler(...params.values())
+    jest.spyOn(
+      service.throttleTransform,
+      "end",
+    ).mockReturnValue()
 
-    expect(params.response.writeHead).toHaveBeenCalledWith(404)
-    expect(params.response.end).toHaveBeenCalled()
-
+    service.stopStreamming()
+    expect(service.throttleTransform.end).toHaveBeenCalled()
   })
 
-  describe('exceptions', () => {
-    test('given inexistent file it should respond with 404', async () => {
-      const params = TestUtil.defaultHandleParams()
-      params.request.method = 'GET'
-      params.request.url = '/index.png'
-      jest.spyOn(
-        Controller.prototype,
-        Controller.prototype.getFileStream.name,
-      ).mockRejectedValue(new Error('Error: ENOENT: no such file or directy'))
+  test('#stopStreamming - non existing throttleTransform', () => {
+    const service = new Service()
+    expect(() => service.stopStreamming()).not.toThrow()
+  })
 
-      await handler(...params.values())
+  test('#broadCast - it should write only for active client streams', () => {
+    const service = new Service()
+    const onData = jest.fn()
+    const client1 = TestUtil.generateWritableStream(onData)
+    const client2 = TestUtil.generateWritableStream(onData)
+    jest.spyOn(
+      service.clientStreams,
+      service.clientStreams.delete.name
+    )
 
-      expect(params.response.writeHead).toHaveBeenCalledWith(404)
-      expect(params.response.end).toHaveBeenCalled()
+    service.clientStreams.set('1', client1)
+    service.clientStreams.set('2', client2)
+    client2.end()
+
+    const writable = service.broadCast()
+    // vai mandar somente para o client1 pq o outro desconectou
+    writable.write('Hello World')
+
+    expect(writable).toBeInstanceOf(Writable)
+    expect(service.clientStreams.delete).toHaveBeenCalled()
+    expect(onData).toHaveBeenCalledTimes(1)
+  })
+
+  test('#getBitRate - it should return the bitRate as string', async () => {
+    const song = 'mySong'
+    const service = new Service()
+
+    const spawnResponse = getSpawnResponse({
+      stdout: '  1k  '
     })
-    test('given an error it should respond with 500', async () => {
-      const params = TestUtil.defaultHandleParams()
-      params.request.method = 'GET'
-      params.request.url = '/index.png'
-      jest.spyOn(
-        Controller.prototype,
-        Controller.prototype.getFileStream.name,
-      ).mockRejectedValue(new Error('Error:'))
+    jest.spyOn(
+      service,
+      service._executeSoxCommand.name
+    ).mockReturnValue(spawnResponse)
 
-      await handler(...params.values())
+    const bitRatePromise = service.getBitRate(song)
 
-      expect(params.response.writeHead).toHaveBeenCalledWith(500)
-      expect(params.response.end).toHaveBeenCalled()
-    })
+    const result = await bitRatePromise
+    expect(result).toStrictEqual('1000')
+    expect(service._executeSoxCommand).toHaveBeenCalledWith(['--i', '-B', song])
   })
+
+  test('#getBitRate - when an error ocurr it should get the fallbackBitRate', async () => {
+    const song = 'mySong'
+    const service = new Service()
+
+    const spawnResponse = getSpawnResponse({
+      stderr: 'error!'
+    })
+    jest.spyOn(
+      service,
+      service._executeSoxCommand.name
+    ).mockReturnValue(spawnResponse)
+
+    const bitRatePromise = service.getBitRate(song)
+
+    const result = await bitRatePromise
+    expect(result).toStrictEqual(fallbackBitRate)
+    expect(service._executeSoxCommand).toHaveBeenCalledWith(['--i', '-B', song])
+  })
+
+  test('#_executeSoxCommand - it should call the sox command', async () => {
+    const service = new Service()
+    const spawnResponse = getSpawnResponse({
+      stdout: '1k'
+    })
+    jest.spyOn(
+      childProcess,
+      childProcess.spawn.name
+    ).mockReturnValue(spawnResponse)
+
+    const args = ['myArgs']
+    const result = service._executeSoxCommand(args)
+    expect(childProcess.spawn).toHaveBeenCalledWith('sox', args)
+    expect(result).toStrictEqual(spawnResponse)
+  })
+
+  test('#startStreamming - it should call the sox command', async () => {
+    const currentSong = 'mySong.mp3'
+    const service = new Service()
+    service.currentSong = currentSong
+    const currentReadable = TestUtil.generateReadableStream(['abc'])
+    const expectedResult = 'ok'
+    const writableBroadCaster = TestUtil.generateWritableStream(() => {})
+
+    jest.spyOn(
+      service,
+      service.getBitRate.name
+    ).mockResolvedValue(fallbackBitRate)
+
+    jest.spyOn(
+      streamsAsync,
+      streamsAsync.pipeline.name
+    ).mockResolvedValue(expectedResult)
+
+    jest.spyOn(
+      fs,
+      fs.createReadStream.name
+    ).mockReturnValue(currentReadable)
+
+    jest.spyOn(
+      service,
+      service.broadCast.name
+    ).mockReturnValue(writableBroadCaster)
+
+    const expectedThrottle = fallbackBitRate / bitRateDivisor
+    const result = await service.startStreamming()
+
+    expect(service.currentBitRate).toEqual(expectedThrottle)
+    expect(result).toEqual(expectedResult)
+
+    expect(service.getBitRate).toHaveBeenCalledWith(currentSong)
+    expect(fs.createReadStream).toHaveBeenCalledWith(currentSong)
+    expect(streamsAsync.pipeline).toHaveBeenCalledWith(
+      currentReadable,
+      service.throttleTransform,
+      service.broadCast()
+    )
+
+  })
+
 })
