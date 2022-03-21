@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1647899385399" clover="3.2.0">
-  <project timestamp="1647899385399" name="All files">
-    <metrics statements="59" coveredstatements="46" conditionals="20" coveredconditionals="20" methods="16" coveredmethods="9" elements="95" coveredelements="75" complexity="0" loc="59" ncloc="59" packages="2" files="6" classes="6"/>
+<coverage generated="1647899573225" clover="3.2.0">
+  <project timestamp="1647899573225" name="All files">
+    <metrics statements="59" coveredstatements="53" conditionals="20" coveredconditionals="20" methods="16" coveredmethods="12" elements="95" coveredelements="85" complexity="0" loc="59" ncloc="59" packages="2" files="6" classes="6"/>
     <package name="server">
-      <metrics statements="47" coveredstatements="39" conditionals="20" coveredconditionals="20" methods="9" coveredmethods="5"/>
+      <metrics statements="47" coveredstatements="46" conditionals="20" coveredconditionals="20" methods="9" coveredmethods="8"/>
       <file name="config.js" path="/home/gabriel/Projects/semana-js-expert-spotify/server/config.js">
         <metrics statements="4" coveredstatements="4" conditionals="2" coveredconditionals="2" methods="0" coveredmethods="0"/>
-        <line num="4" count="1" type="stmt"/>
-        <line num="5" count="1" type="stmt"/>
-        <line num="7" count="1" type="stmt"/>
-        <line num="8" count="1" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
       </file>
       <file name="controller.js" path="/home/gabriel/Projects/semana-js-expert-spotify/server/controller.js">
         <metrics statements="2" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="1"/>
@@ -51,15 +51,15 @@
         <line num="87" count="2" type="stmt"/>
       </file>
       <file name="service.js" path="/home/gabriel/Projects/semana-js-expert-spotify/server/service.js">
-        <metrics statements="8" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="0"/>
-        <line num="10" count="1" type="stmt"/>
-        <line num="14" count="0" type="stmt"/>
-        <line num="18" count="0" type="stmt"/>
-        <line num="19" count="0" type="stmt"/>
-        <line num="21" count="0" type="stmt"/>
-        <line num="23" count="0" type="stmt"/>
-        <line num="30" count="0" type="stmt"/>
-        <line num="31" count="0" type="stmt"/>
+        <metrics statements="8" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="18" count="1" type="stmt"/>
+        <line num="19" count="1" type="stmt"/>
+        <line num="21" count="1" type="stmt"/>
+        <line num="23" count="1" type="stmt"/>
+        <line num="30" count="1" type="stmt"/>
+        <line num="31" count="1" type="stmt"/>
       </file>
       <file name="utils.js" path="/home/gabriel/Projects/semana-js-expert-spotify/server/utils.js">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
@@ -71,7 +71,7 @@
       <metrics statements="12" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="7" coveredmethods="4"/>
       <file name="testUtil.js" path="/home/gabriel/Projects/semana-js-expert-spotify/tests/unit/_util/testUtil.js">
         <metrics statements="12" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="7" coveredmethods="4"/>
-        <line num="12" count="12" type="stmt"/>
+        <line num="12" count="14" type="stmt"/>
         <line num="14" count="0" type="stmt"/>
         <line num="15" count="0" type="stmt"/>
         <line num="18" count="0" type="stmt"/>
