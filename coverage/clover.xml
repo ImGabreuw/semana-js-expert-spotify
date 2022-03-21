@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1647899573225" clover="3.2.0">
-  <project timestamp="1647899573225" name="All files">
-    <metrics statements="59" coveredstatements="53" conditionals="20" coveredconditionals="20" methods="16" coveredmethods="12" elements="95" coveredelements="85" complexity="0" loc="59" ncloc="59" packages="2" files="6" classes="6"/>
+<coverage generated="1647899623375" clover="3.2.0">
+  <project timestamp="1647899623375" name="All files">
+    <metrics statements="59" coveredstatements="54" conditionals="20" coveredconditionals="20" methods="16" coveredmethods="13" elements="95" coveredelements="87" complexity="0" loc="59" ncloc="59" packages="2" files="6" classes="6"/>
     <package name="server">
-      <metrics statements="47" coveredstatements="46" conditionals="20" coveredconditionals="20" methods="9" coveredmethods="8"/>
+      <metrics statements="47" coveredstatements="47" conditionals="20" coveredconditionals="20" methods="9" coveredmethods="9"/>
       <file name="config.js" path="/home/gabriel/Projects/semana-js-expert-spotify/server/config.js">
         <metrics statements="4" coveredstatements="4" conditionals="2" coveredconditionals="2" methods="0" coveredmethods="0"/>
-        <line num="4" count="2" type="stmt"/>
-        <line num="5" count="2" type="stmt"/>
-        <line num="7" count="2" type="stmt"/>
-        <line num="8" count="2" type="stmt"/>
+        <line num="4" count="3" type="stmt"/>
+        <line num="5" count="3" type="stmt"/>
+        <line num="7" count="3" type="stmt"/>
+        <line num="8" count="3" type="stmt"/>
       </file>
       <file name="controller.js" path="/home/gabriel/Projects/semana-js-expert-spotify/server/controller.js">
-        <metrics statements="2" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="1"/>
-        <line num="5" count="1" type="stmt"/>
-        <line num="9" count="0" type="stmt"/>
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
       </file>
       <file name="routes.js" path="/home/gabriel/Projects/semana-js-expert-spotify/server/routes.js">
         <metrics statements="31" coveredstatements="31" conditionals="18" coveredconditionals="18" methods="4" coveredmethods="4"/>
@@ -52,7 +52,7 @@
       </file>
       <file name="service.js" path="/home/gabriel/Projects/semana-js-expert-spotify/server/service.js">
         <metrics statements="8" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
-        <line num="10" count="2" type="stmt"/>
+        <line num="10" count="3" type="stmt"/>
         <line num="14" count="1" type="stmt"/>
         <line num="18" count="1" type="stmt"/>
         <line num="19" count="1" type="stmt"/>
@@ -71,7 +71,7 @@
       <metrics statements="12" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="7" coveredmethods="4"/>
       <file name="testUtil.js" path="/home/gabriel/Projects/semana-js-expert-spotify/tests/unit/_util/testUtil.js">
         <metrics statements="12" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="7" coveredmethods="4"/>
-        <line num="12" count="14" type="stmt"/>
+        <line num="12" count="15" type="stmt"/>
         <line num="14" count="0" type="stmt"/>
         <line num="15" count="0" type="stmt"/>
         <line num="18" count="0" type="stmt"/>
