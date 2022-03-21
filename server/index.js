@@ -4,4 +4,4 @@ import { logger } from './utils.js';
 
 server
   .listen(config.port)
-  .on('listening', () => logger.info('server listening on port 3000!'));
+  .on('listening', () => logger.info(`server listening on port ${config.port}!`));
