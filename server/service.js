@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 import fsPromises from 'fs/promises';
 import { randomUUID } from 'crypto';
 import { PassThrough, Writable } from 'stream';
@@ -12,12 +13,16 @@ import { logger } from './utils.js';
 
 const {
   dir: {
-    publicDirectory
+    publicDirectory,
+    fxDirectory
   },
   constants: {
     fallbackBitRate,
     englishConversation,
-    bitRateDivisor
+    bitRateDivisor,
+    audioMediaType,
+    songVolume,
+    fxVolume
   }
 } = config;
 
@@ -149,7 +154,7 @@ export class Service {
     const chosenSong = songs.find(filename => filename.toLowerCase().includes(fxName))
     if (!chosenSong) return Promise.reject(`the song ${fxName} wasn't found!`)
 
-    return path.join(fxDirectory, chosenSong)
+    return path.join(fxDirectory, chosenSong);
   }
 
   appendFxStream(fx) {
