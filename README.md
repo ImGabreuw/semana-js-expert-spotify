@@ -1,93 +1,81 @@
-# Spotify Radio - Semana JS Expert 6.0
+# semana-js-expert-spotify
 
-Seja bem vindo(a) à sexta Semana Javascript Expert. Este é o código inicial para iniciar nossa jornada.
-
-Marque esse projeto com uma estrela 🌟
-
-## Preview
+![GitHub language count](https://img.shields.io/github/languages/count/ImGabreuw/semana-js-expert-spotify?style=for-the-badge)
+![GitHub forks](https://img.shields.io/github/forks/ImGabreuw/semana-js-expert-spotify?style=for-the-badge)
+![GitHub open issues](https://img.shields.io/github/issues/ImGabreuw/semana-js-expert-spotify?style=for-the-badge)
 
 ![](./docs/demo.png)
 
-## Checklist Features
+> This project is a clone of Spotify, but you can add special effects during the audio in a control panel.
 
-- Web API
+## 💻 Prerequisites
 
-  - [ ] Deve atingir 100% de cobertura de código em testes
+- Node
 
-  - [ ] Deve ter testes de integração validando todas as rotas da API
+- NPM or YARN
 
-  - [x] Deve entregar arquivos estáticos como Node.js Stream
+- Docker
 
-  - [ ] Deve entregar arquivos de música como Node.js Stream
+- Your favorite IDE (recommend [VS Code](https://code.visualstudio.com/))
 
-  - [ ] Dado um usuário desconectado, não deve quebrar a API
+## 💻 Technology
 
-  - [ ] Mesmo que vários comandos sejam pausados ao mesmo tempo, não deve quebrar a API
+- JavaScript
 
-  - [x] Caso aconteça um erro inesperado, a API deve continuar funcionando
+## 🚀 Installation
 
-  - [ ] O projeto precisa ser executado em ambientes Linux, Mac e Windows
+```bash
+# Repository clone
+$ git clone https://github.com/ImGabreuw/semana-js-expert-spotify.git
 
-- Web App
+# Go to the application directory
+$ cd semana-js-expert-spotify/
 
-  - Client
+# Install dependencies
+$ npm i
 
-    - [ ] Deve reproduzir a transmissão
+# Run Application (without Docker)
+$ npm run start
 
-    - [ ] Não deve pausar se algum efeito for adicionado
+# Run Application (with Docker)
+$ npm run start-docker
+```
 
-  - Controller
+## 📫 Contribution
 
-    - [ ] Deve atingir 100% de cobertura de código em testes
+To contribute to **semana-js-expert-spotify**, follow these steps:
 
-    - [ ] Deve poder iniciar ou parar uma transmissão
+1. Fork this repository.
+2. Create a branch: `git checkout -b feature/<feature>`.
+3. Make your changes and confirm them: `git commit -m 'some description for feature'`
+4. Send to the original branch: `git push origin <branch>`
+5. Create the pull request.
 
-    - [ ] Deve enviar comandos para adicionar audio efeitos à uma transmissão
+Alternatively, refer to the GitHub documentation at [how to create a pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request).
 
-## Tarefas por aula
+## 🤝 Contributors
 
-- Aula 01: Cobrir as camadas service e route com testes unitários e alcançar 100% de code coverage
+We thank the following people who contributed to this project:
 
-- Aula 02: Manter 100% de code coverage e implementar testes e2e para toda a API
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/ImGabreuw">
+        <img src="https://avatars.githubusercontent.com/u/60116449?v=4" width="100px;" alt="ImGabreuw"/><br>
+        <sub>
+          <b>ImGabreuw</b>
+        </sub>
+      </a>
+    </td>
+  </tr>
+</table>
 
-- Aula 03: implementar testes unitários para o frontend e manter 100% de code coverage
+## 😄 Be one of the contributors<br>
 
-- **PLUS**:
+Want to be part of this project? Click [HERE](CONTRIBUTING.md) and read how to contribute.
 
-  - [ ] disponibilizar um novo efeito
+## 📝 License
 
-    - [ ] adicionar um botão novo no controlador
+This project is under license. See the archive [LICENSE](LICENSE.md) for more details.
 
-    - [ ] adicionar um som de efeito novo para a pasta `audios/fx/`
-
-    - [ ] republicar no heroku
-
-### Considerações
-
-- Tire suas dúvidas sobre os desafios em nossa comunidade, o objetivo é você aprender de forma divertida. Surgiu dúvidas? Pergunte por lá!
-
-- Ao completar qualquer um dos desafios, envie no canal **#desafios** da comunidade no **Discord**
-
-### Créditos aos áudios usados
-
-#### Transmissão
-
-- [English Conversation](https://youtu.be/ytmMipczEI8)
-
-#### Efeitos
-
-- [Applause](https://youtu.be/mMn_aYpzpG0)
-- [Applause Audience](https://youtu.be/3IC76o_lhFw)
-- [Boo](https://youtu.be/rYAQN11a2Dc)
-- [Fart](https://youtu.be/4PnUfYhbDDM)
-- [Laugh](https://youtu.be/TZ90IUrMNCo)
-
-## FAQ
-
-- `NODE_OPTIONS` não é um comando reconhecido pelo sistema, o que fazer?
-
-  - Se você estiver no Windows, a forma de criar variáveis de ambiente é diferente. Você deve usar a palavra `set` antes do comando.
-  - Ex: ` "test": "set NODE_OPTIONS=--experimental-vm-modules && npx jest --runInBand",`
-
-- Rodei `npm test` mas nada acontece, o que fazer?
-  - Verifique a versão do seu Node.js. Estamos usando na versão 17. Entre no [site do node.js](https://nodejs.org) e baixe a versão mais recente.
+[⬆ Back to the top](#semana-js-expert-spotify)<br>
